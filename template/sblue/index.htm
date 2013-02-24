@@ -1,0 +1,82 @@
+{template 'header'}
+<DIV class=m>
+<DIV class="m_l f_l">
+{template 'topl','chip'}
+<DIV class=topr>
+<DIV style="HEIGHT: 175px; OVERFLOW: hidden">
+<script type="text/javascript" src="{DT_PATH}file/script/A14.js"></script>
+</DIV>
+<DIV class=announce>
+<DIV class=announce_l><STRONG>最新发布：</STRONG></DIV>
+<DIV id=announce class=announce_r>
+<!--{tag("moduleid=5&condition=status=3&areaid=$cityid&pagesize=20&datetype=5&order=addtime desc&target=_blank&template=list-gy&showcat=1")}-->
+<!--{tag("moduleid=21&condition=status=3&areaid=$cityid&pagesize=10&datetype=5&order=addtime desc&target=_blank&template=list-gy&showcat=1")}-->
+  </DIV>
+<DIV class=hotdoing-main-button> <A class=more title=更多 
+href="{DT_PATH}sell/" target=_blank>更多</A> </DIV></DIV></DIV></DIV>
+<DIV class="m_n f_l"></DIV>
+<DIV class="m_r f_l" style="margin-left:10px">
+<DIV class=user><A class=register-btn rel=nofollow title=马上注册，做生意、交商友、订阅行情 
+href="{$MODULE[2][linkurl]}{$DT[file_register]}" target=_blank>免费注册</A> <A 
+class=login-btn title=马上登录，享受会员专属服务 rel=nofollow href="{$MODULE[2][linkurl]}{$DT[file_login]}" 
+target=_blank>会员登录</A> <A class=supplier-btn title=成为诚信通会员，将拥有更多服务 
+href="{$MODULE[2][linkurl]}{$DT[file_my]}" rel=nofollow target=_blank>发布产品</A> </DIV>
+<DIV class=tab_head>
+<UL>
+  <LI id=trade_t_1 class=tab_2 onmouseover="Tb(1, 3, 'trade', 'tab');">公告</LI>
+  <LI id=trade_t_2 class=tab_1 onmouseover="Tb(2, 3, 'trade', 'tab');">规则</LI>
+  <LI id=trade_t_3 class=tab_1 
+onmouseover="Tb(3, 3, 'trade', 'tab');">帮助</LI></UL></DIV>
+<DIV class="box_body li_dot">
+<UL id=trade_c_1 class=itrade>
+  <!--{tag("table=announce&condition=typeid=1098&areaid=$cityid&pagesize=5&order=listorder desc,addtime desc&target=_blank&template=list-a")}-->
+</UL>
+<UL style="DISPLAY: none" id=trade_c_2 class=itrade>
+ <!--{tag("table=announce&condition=typeid=5310&areaid=$cityid&pagesize=5&order=listorder desc,addtime desc&target=_blank&template=list-a")}-->
+ </UL>
+<UL style="DISPLAY: none" id=trade_c_3 class=itrade>
+  <!--{tag("table=announce&condition=typeid=5311&areaid=$cityid&pagesize=5&order=listorder desc,addtime desc&target=_blank&template=list-a")}--></UL></DIV></DIV></DIV>
+<DIV class=m>
+<DIV class=b10></DIV>
+<DIV class="m_l f_l">
+<DIV class=catalog>
+{php $mid = 5;}
+{template 'catalog-index', 'chip'}
+		</DIV></DIV>
+<DIV class="m_n f_l"></DIV>
+<DIV class="m_r f_r">
+<DIV class=box_head><span class="f_r"><a href="{$MODULE[4][linkurl]}">更多..</a></span><STRONG>VIP企业宣传</STRONG></DIV>
+<DIV class="box_body li_dot">
+<!--{tag("moduleid=4&condition=vip>0 and catids<>''&areaid=$cityid&pagesize=12&order=fromtime desc&template=list-com")}--></DIV>
+<DIV class=b10></DIV>
+</DIV>
+
+<DIV class="m_r f_r">
+<DIV class=box_head><span class="f_r"><a href="{$MODULE[21][linkurl]}">更多..</a></span><STRONG>行业资讯</STRONG></DIV>
+<DIV class=box_body>
+<DIV class="li_dot f_gray">
+<!--{tag("moduleid=21&condition=status=3&areaid=$cityid&pagesize=".$DT['page_news']."&datetype=2&order=addtime desc&target=_blank")}--></DIV></DIV>
+</DIV></DIV>
+<DIV class=m>
+<DIV class=b10></DIV>
+<DIV class="m_l f_l">
+<DIV class=box_head><span class="f_r"><a href="{$MODULE[5][linkurl]}">更多..</a></span><STRONG>产品供应</STRONG></DIV>
+<DIV class=box_body>
+<DIV class="prolist zoom">
+<!--{tag("moduleid=5&length=12&condition=status=3 and level>0 and thumb<>''&areaid=$cityid&pagesize=".$DT['page_mall']."&order=hits asc&width=100&height=100&cols=5&group=username&target=_blank&template=sell-index")}-->
+</DIV></DIV></DIV>
+<DIV class="m_n f_l"></DIV>
+<DIV class="m_r f_r">
+<DIV class=box_head><span class="f_r"><a href="{$MODULE[4][linkurl]}">更多..</a></span><STRONG>最新企业</STRONG></DIV>
+<DIV class="box_body li_dot">
+<!--{tag("moduleid=4&condition=groupid>5 and catids<>''&areaid=$cityid&pagesize=15&order=userid desc&template=list-com")}--></DIV></DIV></DIV>
+<DIV class=m>
+<DIV class=b10></DIV>
+<DIV class=box_head_link><STRONG>合作伙伴</STRONG></DIV>
+<DIV class=box_body>
+<!--{tag("table=link&condition=status=3 and level>0 and thumb='' and username=''&areaid=$cityid&pagesize=".$DT['page_text']."&order=listorder desc,itemid desc&template=list-link&cols=9")}-->
+</DIV></DIV>
+<script type="text/javascript" src="{DT_PATH}file/script/index.js"></script>
+<script type="text/javascript" src="{DT_PATH}file/script/marquee.js"></script>
+<script type="text/javascript">new dmarquee(20, 20, 2000, 'announce');</script>
+{template 'footer'}
