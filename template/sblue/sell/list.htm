@@ -1,4 +1,7 @@
 {template 'header'}
+{if !$cityid}
+{php $cityid = 25;}
+{/if}
 <script type="text/javascript">var sh = '{$MOD[linkurl]}search.php?catid={$catid}';</script>
 <div class="m">
 <div class="m_l_1 f_l">
