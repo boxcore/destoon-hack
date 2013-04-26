@@ -52,17 +52,25 @@ if($DT['uploadlog'] && $MG['uploadday']) {
 	}
 }
 require DT_ROOT.'/include/post.func.php';
-$uploaddir = 'file/upload/'.timetodate($DT_TIME, $DT['uploaddir']).'/';
-is_dir(DT_ROOT.'/'.$uploaddir) or dir_create(DT_ROOT.'/'.$uploaddir);
-if($MG['uploadtype']) $DT['uploadtype'] = $MG['uploadtype'];
-if($MG['uploadsize']) $DT['uploadsize'] = $MG['uploadsize'];
-if($remote && strlen($remote) > 17 && strpos($remote, '://') !== false) {
-	require DT_ROOT.'/include/remote.class.php';
-	$do = new remote($remote, $uploaddir);
-} else {
-	require DT_ROOT.'/include/upload.class.php';
-	$do = new upload($_FILES, $uploaddir);
+//muzik hacked
+if($CFG['upyun']){
+  require DT_ROOT.'/api/upyun.func.php';
+  $uploaddir = $_userid . '/'.timetodate($DT_TIME, $DT['uploaddir']).'/';
+  $do = new upyun_uploader($_FILES,$uploaddir);
+}else{
+  $uploaddir = 'file/upload/'.timetodate($DT_TIME, $DT['uploaddir']).'/';
+  is_dir(DT_ROOT.'/'.$uploaddir) or dir_create(DT_ROOT.'/'.$uploaddir);
+  if($MG['uploadtype']) $DT['uploadtype'] = $MG['uploadtype'];
+  if($MG['uploadsize']) $DT['uploadsize'] = $MG['uploadsize'];
+  if($remote && strlen($remote) > 17 && strpos($remote, '://') !== false) {
+    require DT_ROOT.'/include/remote.class.php';
+    $do = new remote($remote, $uploaddir);
+  } else {
+    require DT_ROOT.'/include/upload.class.php';
+    $do = new upload($_FILES, $uploaddir);
+  }
 }
+//end
 $js = $errjs = '';
 if($from == 'thumb' || $from == 'album' || $from == 'photo' || $from == 'file') {
 	$errjs .= 'window.parent.cDialog();';
@@ -74,19 +82,20 @@ if($do->save()) {
 	$limit = intval($MG['uploadlimit']);
 	$total = isset($_SESSION['uploads']) ? count($_SESSION['uploads']) : 0;
 	if($limit && $total > $limit - 1) {
-		file_del(DT_ROOT.'/'.$do->saveto);
+    if(!$CFG["upyun"])
+      file_del(DT_ROOT.'/'.$do->saveto);
 		$errmsg = 'Error(5)'.lang('message->upload_limit', array($limit));
 		if($swfupload) exit(convert($errmsg, DT_CHARSET, 'utf-8'));
 		dalert($errmsg, '', $errjs);
 	}
-	if(in_array(strtolower($do->ext), array('jpg', 'jpeg', 'gif', 'png', 'swf', 'bmp')) && !@getimagesize(DT_ROOT.'/'.$do->saveto)) {
-		file_del(DT_ROOT.'/'.$do->saveto);
+	if(in_array(strtolower($do->ext), array('jpg', 'jpeg', 'gif', 'png', 'swf', 'bmp')) && (!$CFG["upyun"] && !@getimagesize(DT_ROOT.'/'.$do->saveto))) {
+    file_del(DT_ROOT.'/'.$do->saveto);
 		$errmsg = 'Error(6)'.lang('message->upload_bad');
 		if($swfupload) exit(convert($errmsg, DT_CHARSET, 'utf-8'));
 		dalert($errmsg, '', $errjs);
 	}
 	$img_w = $img_h = 0;
-	if($do->image) {
+	if(!$CFG["upyun"] && $do->image) {
 		require DT_ROOT.'/include/image.class.php';
 		if(strtolower($do->ext) == 'gif' && in_array($from, array('thumb', 'album', 'photo'))) {
 			if(!function_exists('imagegif') || !function_exists('imagecreatefromgif')) {
@@ -196,7 +205,7 @@ if($do->save()) {
 		}
 	}
 	$fid = isset($fid) ? $fid : '';
-	if(isset($old) && $old && in_array($from, array('thumb', 'photo'))) delete_upload($old, $_userid);
+	if(!$CFG["upyun"] && isset($old) && $old && in_array($from, array('thumb', 'photo'))) delete_upload($old, $_userid);
 	$_SESSION['uploads'][] = $swfupload ? str_replace('.thumb.'.$do->ext, '', $saveto) : $saveto;
 	if($DT['uploadlog']) $db->query("INSERT INTO {$upload_table} (item,fileurl,filesize,fileext,upfrom,width,height,moduleid,username,ip,addtime,itemid) VALUES ('".md5($saveto)."','$saveto','$do->file_size','$do->ext','$from','$img_w','$img_h','$moduleid','$_username','$DT_IP','$do->uptime','$itemid')");
 	if($swfupload) exit('FILEID:'.$saveto);

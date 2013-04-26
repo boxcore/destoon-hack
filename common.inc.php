@@ -3,7 +3,7 @@
 	[Destoon B2B System] Copyright (c) 2008-2012 Destoon.COM
 	This is NOT a freeware, use is subject to license.txt
 */
-define('DT_DEBUG', 0);
+define('DT_DEBUG', true);
 define('DT_UPYUN', true);
 if(DT_DEBUG) {
 	error_reporting(E_ALL);
