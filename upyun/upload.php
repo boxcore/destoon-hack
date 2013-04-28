@@ -21,6 +21,7 @@ if($limit && $total > $limit - 1) {
   exit();
 }
 //
+require DT_ROOT.'/upyun/config.inc.php';
 require DT_ROOT.'/upyun/upyun.func.php';
 $uploaddir = '/'.timetodate($DT_TIME, $DT['uploaddir']).'/';
 if($MG['uploadtype']) $DT['uploadtype'] = $MG['uploadtype'];
