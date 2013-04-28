@@ -15,6 +15,7 @@ $menus = array (
     array('添加分类', '?file='.$file.'&action=add&mid='.$mid.'&parentid='.$parentid),
     array('管理分类', '?file='.$file.'&mid='.$mid),
     array('分类复制', '?file='.$file.'&action=copy&mid='.$mid),
+    array('分类导入', '?file='.$file.'&action=import&mid='.$mid),
     array('批量索引', '?file='.$file.'&action=letters&mid='.$mid),
     array('更新地址', '?file='.$file.'&action=url&mid='.$mid),
     array('更新统计', '?file='.$file.'&action=count&mid='.$mid),
@@ -134,6 +135,38 @@ switch($action) {
 			include tpl('category_copy');
 		}
 	break;
+  case 'import':
+    function comma_split($str){
+      return explode(',',$str);
+    }
+    if($submit){
+			if(!$save) $db->query("DELETE FROM {$table} WHERE moduleid=$mid");
+			$cats = array();
+      $file = DT_ROOT.'/tianzhu/cats.csv';
+      $lines = explode("\n",trim(file_get_contents($file)));
+      $lines =array_map('comma_split',$lines);
+      foreach($lines as $line){
+        $cats[array_shift($line)] = array_combine(array('catname','parentid'),$line);
+      }
+      foreach($cats as &$cat){
+        if($cat['parentid']){
+          $parent = $cats[$cat['parentid']];
+          $cat['parentid'] = $parent['catid'];
+          if(!$cat['parentid']){
+            pr($cat);
+          }
+        }
+        $do->add($cat);
+        $cat['catid'] = $do->catid;
+        //break;
+      }
+			$do->repair();
+			msg('分类导入成功', '?file='.$file.'&action=url&mid='.$mid.'&forward='.urlencode('?file='.$file.'&mid='.$mid));
+    
+		} else {
+			include tpl('category_import');
+    }
+  break;
 	case 'count':
 		require DT_ROOT.'/include/module.func.php';
 		$tb =get_table($mid);
@@ -281,8 +314,10 @@ class category {
 		} else {
 			$arrparentid = 0;
 		}
-		$catdir = $category['catdir'] ? $category['catdir'] : $this->catid;
-		$this->db->query("UPDATE {$this->table} SET listorder=$this->catid,catdir='$catdir',arrparentid='$arrparentid' WHERE catid=$this->catid");
+    //muzik hacked
+		$catdir = $category['catdir'] ? $category['catdir'] : $this->get_catdir($this->get_letter($category['catname'],false));
+    $letter = substr($catdir,0,1);
+		$this->db->query("UPDATE {$this->table} SET listorder=$this->catid,catdir='$catdir',letter='$letter',arrparentid='$arrparentid' WHERE catid=$this->catid");
 		return true;
 	}
 

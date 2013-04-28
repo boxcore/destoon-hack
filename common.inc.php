@@ -132,7 +132,7 @@ $today_endtime = strtotime(date('Y-m-d', $DT_TIME).' 23:59:59');
 $seo_file = $seo_title = $head_title = $head_keywords = $head_description = $head_canonical = '';
 if($catid) $CAT = get_cat($catid);
 //hacked start 根据slug识别分类 需配合修改extend.func
-if ($catdir && !$CAT){
+if (isset($catdir) && !$CAT){
   $CAT = get_cat_by_dir($catdir,$moduleid);
 }
 //hacked end
