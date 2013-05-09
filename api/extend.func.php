@@ -26,6 +26,7 @@ function get_cats_for_detect($moduleid){
 	}
 	return $cat;
 }
+
 //ini_set("pcre.recursion_limit", "300000");
 function detect_cat($post,$moduleid=5){
   $cats = get_cats_for_detect($moduleid);
@@ -50,6 +51,26 @@ function detect_cat($post,$moduleid=5){
     break;
   }
   return $post;
+}
+function bulk_fix_cats($last_id,$per = 100){
+	global $db;
+	$result = $db->query("SELECT title,itemid FROM {$db->pre}sell WHERE itemid < $last_id ORDER BY itemid desc limit $per");
+	while($r = $db->fetch_array($result)) {
+    $last_id = $r['itemid'];
+    $r = detect_cat($r);
+    if(array_key_exists('catid',$r)){
+      $db->query("update {$db->pre}sell set catid = $r[catid] where itemid = $r[itemid]");
+    }
+	}
+	return $last_id;
+}
+function update_cat_by_detect($id){
+  global $db;
+  $r = $db->get_one("select title from {$db->pre}sell where itemid = $id");
+  $r = detect_cat($r);
+  if(array_key_exists('catid',$r)){
+    $db->query("update {$db->pre}sell set catid = $r[catid] where itemid = $id");
+  }
 }
 //hacked end
 ?>
