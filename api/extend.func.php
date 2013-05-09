@@ -1,6 +1,7 @@
 <?php
 defined('IN_DESTOON') or exit('Access Denied');
 #Your Functions
+define('DEFAULT_CITY',false);
 //hacked start get_cat_by_dir
 function get_cat_by_dir($catdir,$moduleid) {
 	global $db;
