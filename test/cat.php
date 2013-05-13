@@ -6,11 +6,13 @@ if($_GET['action'] == 'update'){
   if(!$last_id) $last_id = 23830;
   ini_set('max_execution_time',90);
   $last_id = bulk_fix_cats($last_id);
+  if($last_id){
   ?>
   <script type="text/javascript">
   window.location.href ="/test/cat.php?action=update&last_id=<?php echo $last_id; ?>"
   </script>
 <?php
+  }
 }else{
 $post = array(
   'title'=>'通成人教育曲靖学历教育丽江会计培训大理会计师培训选新盟培训服装展示道具',

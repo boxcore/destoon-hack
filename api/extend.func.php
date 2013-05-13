@@ -56,13 +56,13 @@ function bulk_fix_cats($last_id,$per = 100){
 	global $db;
 	$result = $db->query("SELECT title,itemid FROM {$db->pre}sell WHERE itemid < $last_id ORDER BY itemid desc limit $per");
 	while($r = $db->fetch_array($result)) {
-    $last_id = $r['itemid'];
+    $id = $r['itemid'];
     $r = detect_cat($r);
     if(array_key_exists('catid',$r)){
       $db->query("update {$db->pre}sell set catid = $r[catid] where itemid = $r[itemid]");
     }
 	}
-	return $last_id;
+	return $id;
 }
 function update_cat_by_detect($id){
   global $db;
