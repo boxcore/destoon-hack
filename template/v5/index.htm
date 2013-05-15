@@ -10,12 +10,12 @@
 			<div id="trades">
 				<div class="tab_head">
 				<ul>
-					<li class="tab_1" id="trade_t_2" onmouseover="Tb(2, 3, 'trade', 'tab');"><a href="{$MODULE[5][linkurl]}">供应</a></li>
+					<li class="tab_1" id="trade_t_2" onmouseover="Tb(2, 3, 'trade', 'tab');"><a href="{$MODULE[5][linkurl]}">供应更新</a></li>
 				</ul>
 				</div>
 				<div class="box_body li_dot">
 					<div id="trade_c_2" class="itrade">
-					<!--{tag("moduleid=5&condition=status=3 and thumb=''&areaid=$cityid&pagesize=".$DT['page_trade']."&datetype=2&target=_blank&order=addtime desc")}-->
+					<!--{tag("moduleid=5&condition=status=3 and thumb=''&areaid=$cityid&pagesize=".$DT['page_trade']."&datetype=H:i&target=_blank&order=addtime desc")}-->
 					</div>
 				</div>
 			</div>
@@ -52,7 +52,6 @@
 			<div id="site_stats">
 			<ul>
 			<li>产品总数:<span>{php echo $db->count($DT_PRE.'sell_5', 'status=3', 1800);}</span></li>
-			<li>求购总数:<span>{php echo $db->count($DT_PRE.'buy_6', 'status=3', 1800);}</span></li>
 			<li>企业总数:<span>{php echo $db->count($DT_PRE.'company', '1', 1800);}</span></li>
 			<li>在线会员:<span>{php echo $db->count($DT_PRE.'online', '1', 1800);}</span></li>
 			</ul>
@@ -112,7 +111,7 @@
 			<div class="ibox_head">
 				<a href="{$MODULE[21][linkurl]}"><strong>资讯</strong></a>
 			</div>
-			<div class="li_dot"><!--{tag("moduleid=21&condition=status=3&areaid=$cityid&pagesize=".$DT[page_news]."&datetype=2&order=addtime desc&target=_blank")}--></div>
+			<div class="li_dot"><!--{tag("moduleid=21&condition=status=3&areaid=$cityid&pagesize=".$DT[page_news]."&order=addtime desc&target=_blank")}--></div>
 			<div class="b10"></div>
 			{/if}
 			{if $DT[page_quote] && isset($MODULE[7])}
