@@ -15,7 +15,7 @@
 				</div>
 				<div class="box_body li_dot">
 					<div id="trade_c_2" class="itrade">
-					<!--{tag("moduleid=5&condition=status=3&areaid=$cityid&pagesize=".$DT['page_trade']."&datetype=2&target=_blank&order=addtime desc")}-->
+					<!--{tag("moduleid=5&condition=status=3 and thumb=''&areaid=$cityid&pagesize=".$DT['page_trade']."&datetype=2&target=_blank&order=addtime desc")}-->
 					</div>
 				</div>
 			</div>
@@ -94,7 +94,7 @@
 	<div class="box_body">
 		<div class="m_l f_l">
 			<div class="isell_head">
-				<div class="isell_2" id="isell_t_1" onmouseover="Tb(1, 2, 'isell', 'isell');"><a href="{$MODULE[5][linkurl]}">推荐产品</a></div>
+				<div class="isell_2" id="isell_t_1" onmouseover="Tb(1, 2, 'isell', 'isell');"><a href="{$MODULE[5][linkurl]}">最新产品</a></div>
 				{if $DT[page_mall] && isset($MODULE[16])}<div class="isell_1" id="isell_t_2" onmouseover="Tb(2, 2, 'isell', 'isell');"><a href="{$MODULE[16][linkurl]}">商城热卖</a></div>{/if}
 			</div>
 			<div id="isell_c_1" class="isell_s" style="display:">
@@ -189,7 +189,7 @@
 				<a href="{$MODULE[4][linkurl]}{rewrite('news.php?more=1')}"><strong>企业新闻</strong></a>
 			</div>
 			<div class="li_dot f_gray">
-			<!--{tag("table=news&condition=status=3 and level>0&pagesize=".$DT[page_comnews]."&datetype=2&order=addtime desc&target=_blank")}-->
+			<!--{tag("table=news&condition=status=3&pagesize=".$DT[page_comnews]."&datetype=2&order=addtime desc&target=_blank")}-->
 			</div>
 			<div class="b10">&nbsp;</div>
 			{/if}
