@@ -69,7 +69,9 @@
 			<a href="{$MODULE[4][linkurl]}"><strong>新近企业</strong></a>
 		</div>
 		<div class="box_body li_dot">
-      <div style="height:220px;overflow:hidden;" id="company"><!--{tag("moduleid=4&condition=groupid>5&areaid=$cityid&pagesize=".$DT[page_com]."&order=fromtime desc&template=list-com")}--></div>
+      <div style="height:220px;overflow:hidden;" id="company">
+      <!--{tag("moduleid=4&condition=groupid>5 and catids<>''&areaid=$cityid&pagesize=".$DT['page_com']."&order=userid desc&template=list-com")}-->
+        </div>
 		</div>
 		{/if}
 	</div>
