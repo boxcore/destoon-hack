@@ -56,10 +56,13 @@
 			<li>在线会员:<span>{php echo $db->count($DT_PRE.'online', '1', 1800);}</span></li>
 			</ul>
 			</div>
-			<a href="{$EXT[announce_url]}"><strong>网站动态</strong></a>
+			<!--<a href="{$EXT[announce_url]}"><strong>网站动态</strong></a>-->
+      <a href="#"><strong>云南企业</strong></a>
 		</div>
 		<div class="box_body li_dot">
-			<div class="announce"><!--{tag("table=announce&condition=totime=0 or totime>$today_endtime-86400&areaid=$cityid&pagesize=3&datetype=2&order=listorder desc,addtime desc&target=_blank")}--></div>
+      <div class="announce">
+      <!--{tag("moduleid=4&condition=groupid>5 and catids<>''&areaid=25&pagesize=333&order=userid desc&template=list-com")}-->
+      </div>
 		</div>
 
 		{if $DT[page_com]}
