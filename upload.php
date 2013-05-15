@@ -1,10 +1,11 @@
 <?php
 /*
-	[Destoon B2B System] Copyright (c) 2008-2011 Destoon.COM
+	[Destoon B2B System] Copyright (c) 2008-2013 Destoon.COM
 	This is NOT a freeware, use is subject to license.txt
 */
 @set_time_limit(0);
 require 'common.inc.php';
+if($DT_BOT) dhttp(403);
 $from = isset($from) ? trim($from) : '';
 $swfupload = isset($swfupload) ? 1 : 0;
 $errmsg = '';
@@ -12,10 +13,11 @@ if($swfupload) {//Fix FlashPlayer Bug
 	$swf_userid = intval($swf_userid);
 	if($swf_userid != $_userid && is_md5($swf_auth)) {
 		$swf_groupid = intval($swf_groupid);
-		if($swf_auth = md5($swf_userid.$swf_username.$swf_groupid.DT_KEY.$DT_IP)) {
+		if($swf_auth = md5($swf_userid.$swf_username.$swf_groupid.$swf_company.DT_KEY.$DT_IP)) {
 			$_userid = $swf_userid;
 			$_username = $swf_username;
 			$_groupid = $swf_groupid;
+			$_company = convert($swf_company, 'utf-8', DT_CHARSET);
 			$MG = cache_read('group-'.$_groupid.'.php');
 		} else {
 			$errmsg = 'Error(0)'.'SWFUpload Denied';
@@ -84,19 +86,26 @@ if($do->save()) {
 		if($swfupload) exit(convert($errmsg, DT_CHARSET, 'utf-8'));
 		dalert($errmsg, '', $errjs);
 	}
-	if(in_array(strtolower($do->ext), array('jpg', 'jpeg', 'gif', 'png', 'swf', 'bmp')) && !@getimagesize(DT_ROOT.'/'.$do->saveto)) {
+	$t = @getimagesize(DT_ROOT.'/'.$do->saveto);
+	if(in_array($do->ext, array('jpg', 'jpeg', 'gif', 'png', 'swf', 'bmp')) && !$t) {
 		file_del(DT_ROOT.'/'.$do->saveto);
 		$errmsg = 'Error(6)'.lang('message->upload_bad');
+		if($swfupload) exit(convert($errmsg, DT_CHARSET, 'utf-8'));
+		dalert($errmsg, '', $errjs);
+	}
+	if(in_array($do->ext, array('jpg', 'jpeg')) && $t['channels'] == 4) {
+		file_del(DT_ROOT.'/'.$do->saveto);
+		$errmsg = 'Error(7)'.lang('message->upload_cmyk');
 		if($swfupload) exit(convert($errmsg, DT_CHARSET, 'utf-8'));
 		dalert($errmsg, '', $errjs);
 	}
 	$img_w = $img_h = 0;
 	if($do->image) {
 		require DT_ROOT.'/include/image.class.php';
-		if(strtolower($do->ext) == 'gif' && in_array($from, array('thumb', 'album', 'photo'))) {
+		if($do->ext == 'gif' && in_array($from, array('thumb', 'album', 'photo'))) {
 			if(!function_exists('imagegif') || !function_exists('imagecreatefromgif')) {
 				file_del(DT_ROOT.'/'.$do->saveto);
-				$errmsg = 'Error(7)'.lang('message->upload_jpg');
+				$errmsg = 'Error(8)'.lang('message->upload_jpg');
 				if($swfupload) exit(convert($errmsg, DT_CHARSET, 'utf-8'));
 				dalert($errmsg, '', $errjs);
 			}
@@ -177,7 +186,7 @@ if($do->save()) {
 			}
 		}
 	}
-	$saveto = linkurl($do->saveto, 1);
+	$saveto = linkurl($do->saveto);
 	if($DT['ftp_remote'] && $DT['remote_url']) {
 		require DT_ROOT.'/include/ftp.class.php';
 		$ftp = new dftp($DT['ftp_host'], $DT['ftp_user'], $DT['ftp_pass'], $DT['ftp_port'], $DT['ftp_path'], $DT['ftp_pasv'], $DT['ftp_ssl']);
@@ -218,7 +227,7 @@ if($do->save()) {
 		$js .= 'window.parent.GetE("frmUpload").reset();';
 	} else if($from == 'attach') {
 		$js .= 'window.parent.GetE("txtUrl").value="'.$saveto.'";';
-		$js .= 'window.parent.GetE("frmUpload").reset();';
+		$js .= 'window.parent.window.parent.Ok();';
 	} else if($from == 'file') {
 		if($moduleid == 2 && $fid == 'chat') {
 			$js .= $pr.'("word").value="'.$saveto.'";';
@@ -231,7 +240,7 @@ if($do->save()) {
 	}
 	dalert('', '', $js);
 } else {
-	$errmsg = 'Error(8)'.$do->errmsg;
+	$errmsg = 'Error(9)'.$do->errmsg;
 	if($swfupload) exit(convert($errmsg, DT_CHARSET, 'utf-8'));
 	dalert($errmsg, '', $errjs);
 }

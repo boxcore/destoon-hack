@@ -31,7 +31,7 @@ switch($action) {
 	case 'add':
 		if($MG['sell_limit'] && $limit_used >= $MG['sell_limit']) dalert(lang($L['info_limit'], array($MG[$MOD['module'].'_limit'], $limit_used)), $_userid ? $MODULE[2]['linkurl'].$DT['file_my'].'?mid='.$mid : $MODULE[2]['linkurl'].$DT['file_my']);
 		if($MG['day_limit']) {
-			$today = strtotime(timetodate($DT_TIME, 3).' 00:00:00');
+			$today = $today_endtime - 86400;
 			$r = $db->get_one("SELECT COUNT(*) AS num FROM {$table} WHERE $sql AND addtime>$today");
 			if($r && $r['num'] >= $MG['day_limit']) dalert(lang($L['day_limit'], array($MG['day_limit'])), $_userid ? $MODULE[2]['linkurl'].$DT['file_my'].'?mid='.$mid : $MODULE[2]['linkurl'].$DT['file_my']);
 		}
@@ -77,7 +77,7 @@ switch($action) {
         $post = detect_cat($post,$moduleid);
 				$CAT = get_cat($post['catid']);
 				if(!$CAT || !check_group($_groupid, $CAT['group_add'])) dalert(lang($L['group_add'], array($CAT['catname'])));
-				if($MOD['upload_thumb'] && $_userid && strlen($post['thumb']) < 5) dalert($L['sell_upload_image']);
+				if($MOD['upload_thumb'] && $MG['upload'] && strlen($post['thumb']) < 5) dalert($L['sell_upload_image']);
 				$post['addtime'] = $post['level'] = $post['fee'] = 0;
 				$post['style'] = $post['template'] = $post['note'] = $post['filepath'] = '';
 				if(!$IMVIP && $MG['uploadpt']) $post['thumb1'] = $post['thumb2'] = '';
@@ -92,8 +92,8 @@ switch($action) {
 					credit_record($_username, -$MOD['credit_elite'], 'system', lang($L['credit_record_elite'], array($MOD['name'])), $post['title']);
 				}
 
-				if($could_color && $style && $_credit > $MOD['credit_color']) {
-					$post['style'] = $style;
+				if($could_color && $color && $_credit > $MOD['credit_color']) {
+					$post['style'] = $color;
 					credit_add($_username, -$MOD['credit_color']);
 					credit_record($_username, -$MOD['credit_color'], 'system', $L['title_color'], '['.$MOD['name'].']'.$post['title']);
 				}
@@ -103,6 +103,7 @@ switch($action) {
 				$do->add($post);
 				if($FD) fields_update($post_fields, $table, $do->itemid);
 				if($CP) property_update($post_ppt, $moduleid, $post['catid'], $do->itemid);
+				if($MOD['show_html'] && $post['status'] > 2) $do->tohtml($do->itemid);
 
 				if($fee_add) {
 					if($fee_currency == 'money') {
@@ -112,16 +113,21 @@ switch($action) {
 						credit_add($_username, -$fee_add);
 						credit_record($_username, -$fee_add, 'system', lang($L['credit_record_add'], array($MOD['name'])), 'ID:'.$do->itemid);
 					}
-				}
-				
+				}				
 				$msg = $post['status'] == 2 ? $L['success_check'] : $L['success_add'];
+				$js = '';
+				if(isset($post['sync_sina']) && $post['sync_sina']) $js .= sync_weibo('sina', $moduleid, $do->itemid);
+				if(isset($post['sync_qq']) && $post['sync_qq']) $js .= sync_weibo('qq', $moduleid, $do->itemid);
+				if(isset($post['sync_qzone']) && $post['sync_qzone']) $js .= sync_weibo('qzone', $moduleid, $do->itemid);
 				if($_userid) {
 					set_cookie('dmsg', $msg);
 					$forward = $MODULE[2]['linkurl'].$DT['file_my'].'?mid='.$mid.'&status='.$post['status'];
-					dalert('', '', 'parent.window.location="'.$forward.'";');
+					$msg = '';
 				} else {
-					dalert($msg, '', 'parent.window.location=parent.window.location;');
+					$forward = $MODULE[2]['linkurl'].$DT['file_my'].'?mid='.$mid.'&action=add';
 				}
+				$js .= 'window.onload=function(){parent.window.location="'.$forward.'";}';
+				dalert($msg, '', $js);
 			} else {
 				dalert($do->errmsg, '', ($need_captcha ? reload_captcha() : '').($need_question ? reload_question() : ''));
 			}
@@ -178,10 +184,9 @@ switch($action) {
 				$post['username'] = $_username;
 				if($FD) fields_check($post_fields);
 				if($CP) property_check($post_ppt);
-				$do->edit($post);
 				if($FD) fields_update($post_fields, $table, $do->itemid);
 				if($CP) property_update($post_ppt, $moduleid, $post['catid'], $do->itemid);
-
+				$do->edit($post);
 				set_cookie('dmsg', $L['success_edit']);
 				dalert('', '', 'parent.window.location="'.$forward.'"');
 			} else {

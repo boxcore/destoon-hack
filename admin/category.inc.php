@@ -1,12 +1,13 @@
 <?php
 /*
-	[Destoon B2B System] Copyright (c) 2008-2011 Destoon.COM
+	[Destoon B2B System] Copyright (c) 2008-2013 Destoon.COM
 	This is NOT a freeware, use is subject to license.txt
 */
 defined('IN_DESTOON') or exit('Access Denied');
 $mid = isset($mid) ? intval($mid) : 1;
 $CATEGORY = cache_read('category-'.$mid.'.php');
 $MOD = cache_read('module-'.$mid.'.php');
+$NUM = count($CATEGORY);
 $catid = isset($catid) ? intval($catid) : 0;
 $do = new category($mid, $catid);
 $parentid = isset($parentid) ? intval($parentid) : 0;
@@ -21,6 +22,7 @@ $menus = array (
     array('更新统计', '?file='.$file.'&action=count&mid='.$mid),
     array('更新缓存', '?file='.$file.'&action=cache&mid='.$mid),
 );
+if(strpos($forward, 'category') === false) $forward = '?file='.$file.'&mid='.$mid.'&parentid='.$parentid.'&kw='.urlencode($kw);
 switch($action) {
 	case 'add':
 		if($submit) {
@@ -69,7 +71,7 @@ switch($action) {
 				$CATEGORY[$catid] = $db->get_one("SELECT * FROM {$table} WHERE catid=$catid");
 				update_category($CATEGORY[$catid]);
 			}
-			$do->cache();
+			$NUM > 200 ? $do->cache() : $do->repair();
 			dmsg('添加成功', '?file='.$file.'&mid='.$mid.'&parentid='.$category['parentid']);
 		} else {
 			include tpl('category_add');
@@ -83,7 +85,7 @@ switch($action) {
 			$do->edit($category);
 			$category['catid'] = $catid;
 			update_category($category);
-			$do->cache();
+			$NUM > 200 ? $do->cache() : $do->repair();
 			dmsg('修改成功', '?file='.$file.'&mid='.$mid.'&parentid='.$category['parentid']);
 		} else {
 			extract($db->get_one("SELECT * FROM {$table} WHERE catid=$catid"));
@@ -215,7 +217,7 @@ switch($action) {
 	break;
 	case 'url':	
 		foreach($CATEGORY as $c) {
-			update_category($c); 
+			update_category($c);
 		}
 		$do->cache();
 		dmsg('更新成功', "?mid=$mid&file=$file");
@@ -228,7 +230,7 @@ switch($action) {
 		if($catid) $catids = $catid;
 		$catids or msg();
 		$do->delete($catids);
-		$do->cache();
+		$NUM > 200 ? $do->cache() : $do->repair();
 		dmsg('删除成功', $forward);
 	break;
 	case 'update':
@@ -238,7 +240,7 @@ switch($action) {
 			$CATEGORY[$catid] = $db->get_one("SELECT * FROM {$table} WHERE catid=$catid");
 			update_category($CATEGORY[$catid]);
 		}		
-		$do->cache();
+		$NUM > 200 ? $do->cache() : $do->repair();
 		dmsg('更新成功', $forward);
 	break;
 	case 'letters':
@@ -265,13 +267,15 @@ switch($action) {
 	default:
 		$total = 0;
 		$DTCAT = array();
-		$result = $db->query("SELECT * FROM {$table} WHERE moduleid=$mid AND parentid=$parentid ORDER BY listorder,catid");
+		$condition = "moduleid=$mid";
+		$condition .= $keyword ? " AND catname LIKE '%$keyword%'" : " AND parentid=$parentid";
+		$result = $db->query("SELECT * FROM {$table} WHERE $condition ORDER BY listorder,catid");
 		while($r = $db->fetch_array($result)) {
 			$r['childs'] = substr_count($r['arrchildid'], ',');
 			$total += $r['item'];
 			$DTCAT[$r['catid']] = $r;
 		}
-		if(!$DTCAT && !$parentid) msg('暂无分类,请先添加',  '?file='.$file.'&mid='.$mid.'&action=add&parentid='.$parentid);
+		if(!$DTCAT && !$parentid && !$keyword) msg('暂无分类,请先添加',  '?file='.$file.'&mid='.$mid.'&action=add&parentid='.$parentid);
 		include tpl('category');
 	break;
 }
@@ -318,6 +322,8 @@ class category {
 		$catdir = $category['catdir'] ? $category['catdir'] : $this->get_catdir($this->get_letter($category['catname'],false));
     $letter = substr($catdir,0,1);
 		$this->db->query("UPDATE {$this->table} SET listorder=$this->catid,catdir='$catdir',letter='$letter',arrparentid='$arrparentid' WHERE catid=$this->catid");
+		//$catdir = $category['catdir'] ? $category['catdir'] : $this->catid;
+		//$this->db->query("UPDATE {$this->table} SET listorder=$this->catid,catdir='$catdir',arrparentid='$arrparentid' WHERE catid=$this->catid");
 		return true;
 	}
 
